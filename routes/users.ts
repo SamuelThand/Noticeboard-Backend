@@ -37,25 +37,24 @@ userRoutes.post(
     const username = req.body.username;
     const password = req.body.password;
 
-    User.getUser(username)
+    User.getUserByUsername(username)
       .then((result) => {
-        if (!(result && bcrypt.compareSync(password, result.password))) {
-          res.status(404).json({ message: 'Incorrect credentials' });
-          return;
-        }
-
-        req.session.regenerate((error) => {
-          if (error) {
-            next(error);
-          }
-          req.session.user = username;
-          req.session.save((error) => {
+        if (result && bcrypt.compareSync(password, result.password)) {
+          req.session.regenerate((error) => {
             if (error) {
-              return next(error);
+              next(error);
             }
-            res.status(200).json();
+            req.session.user = username;
+            req.session.save((error) => {
+              if (error) {
+                return next(error);
+              }
+              res.status(200).json(result);
+            });
           });
-        });
+        } else {
+          res.status(404).json({ message: 'Incorrect credentials' });
+        }
       })
       .catch((error) => {
         res.status(500).json({ message: error.message });
@@ -70,6 +69,7 @@ userRoutes.post(
  */
 userRoutes.get(
   '/signout',
+  isAuthenticated,
   function (req: Express.Request, res: Express.Response) {
     req.session.destroy((error) => {
       if (error) {
@@ -142,7 +142,7 @@ userRoutes.post(
         if (error.name === 'MongoServerError' && error.code === 11000) {
           res
             .status(409)
-            .json({ message: 'User already exists with that id.' });
+            .json({ message: 'User already exists with that username.' });
         } else if (error.name === 'ValidationError') {
           res.status(400).json({ message: 'Incorrect format' });
         } else {

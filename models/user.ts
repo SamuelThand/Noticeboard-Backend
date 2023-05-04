@@ -22,9 +22,16 @@ interface UserModel extends Model<IUser, {}, IUserMethods> {
    * Get user by id.
    *
    * @param {string} id of the user
-   * @returns {Promise<IUser[]>} promise with user
+   * @returns {Promise<IUser>} promise with user
    */
   getUser(id: string): Promise<IUser>;
+  /**
+   * Get user by username.
+   *
+   * @param {string} username of the user
+   * @returns {Promise<IUser>} promise with user
+   */
+  getUserByUsername(username: string): Promise<IUser>;
   /**
    * Add a new user.
    *
@@ -87,6 +94,10 @@ UserSchema.static('getUsers', function () {
 
 UserSchema.static('getUser', function (id: string) {
   return this.findById(id);
+});
+
+UserSchema.static('getUserByUsername', function (username: string) {
+  return this.findOne({ username });
 });
 
 UserSchema.static('addUser', function (user: IUser): Promise<IUser> {
