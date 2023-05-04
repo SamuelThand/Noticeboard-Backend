@@ -5,7 +5,8 @@ interface IUser {
   lastName: string;
   userName: string;
   password: string;
-  isAdmin?: boolean;
+  userSince: Date;
+  isAdmin: boolean;
 }
 
 interface IUserMethods {}
@@ -63,10 +64,17 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
     type: String,
     required: true
   },
+  userSince: {
+    type: Date,
+    required: true,
+    default: Date.now(),
+    immutable: true
+  },
   isAdmin: {
     type: Boolean,
     default: false,
-    immutable: true
+    immutable: true,
+    required: true
   }
 });
 // TODO: Decide if password should be remove in the route or here

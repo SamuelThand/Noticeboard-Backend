@@ -2,9 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import testRoutes from './routes/tests';
-// TODO import routes
 import expressSession, { SessionOptions } from 'express-session';
+// TODO import routes
+import testRoutes from './routes/tests';
+import userRoutes from './routes/users';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -56,6 +57,7 @@ app.use(expressSession(session));
 
 // TODO use routes, remove test route before production
 app.use('/tests', testRoutes);
+app.use('/users', userRoutes);
 
 mongoose
   .connect(process.env.DB_SERVER!)
