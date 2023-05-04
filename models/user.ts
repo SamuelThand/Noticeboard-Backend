@@ -5,15 +5,39 @@ interface IUser {
   lastName: string;
   userName: string;
   password: string;
+  isAdmin?: boolean;
 }
 
 interface IUserMethods {}
 
 interface UserModel extends Model<IUser, {}, IUserMethods> {
+  /**
+   * Get all users.
+   *
+   * @returns {Promise<IUser[]>} promise with all users
+   */
   getUsers(): Promise<IUser[]>;
-  getUser(id: Schema.Types.ObjectId): Promise<IUser>;
-  addUser(User: IUser): Promise<IUser>;
-  removeUser(User: IUser): Promise<IUser>;
+  /**
+   * Get user by id.
+   *
+   * @param {string} id of the user
+   * @returns {Promise<IUser[]>} promise with user
+   */
+  getUser(id: string): Promise<IUser>;
+  /**
+   * Add a new user.
+   *
+   * @param {IUser} user to add
+   * @returns {Promise<IUser>} added user
+   */
+  addUser(user: IUser): Promise<IUser>;
+  /**
+   * Remove user.
+   *
+   * @param {string} id user id
+   * @returns {Promise<IUser>} removed user
+   */
+  removeUser(id: string): Promise<IUser>;
 }
 
 const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
@@ -38,46 +62,31 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   password: {
     type: String,
     required: true
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+    immutable: true
   }
 });
+// TODO: Decide if password should be remove in the route or here
+// Remove password example:
+// return this.find({}).select('-password');
 
-/**
- * Get all users.
- *
- * @returns {Promise<IUser[]>} promise with all users
- */
 UserSchema.static('getUsers', function () {
   return this.find({});
 });
 
-/**
- * Get user by id.
- *
- * @param {Schema.Types.ObjectId} id of the user
- * @returns {Promise<IUser[]>} promise with user
- */
-UserSchema.static('getUser', function (id: Schema.Types.ObjectId) {
-  return this.find({ id });
+UserSchema.static('getUser', function (id: string) {
+  return this.findById(id);
 });
 
-/**
- * Add a new user.
- *
- * @param {IUser} user to add
- * @returns {Promise<IUser>} added user
- */
-UserSchema.static('addUser', function (user: IUser) {
+UserSchema.static('addUser', function (user: IUser): Promise<IUser> {
   return this.create(user);
 });
 
-/**
- * Remove user.
- *
- * @param {Schema.Types.ObjectId} id user id
- * @returns {Promise<IUser>} removed user
- */
-UserSchema.static('removeUser', function (id: Schema.Types.ObjectId) {
-  return this.remove(id);
+UserSchema.static('removeUser', function (id: string) {
+  return this.findByIdAndDelete(id);
 });
 
 export const User = model<IUser, UserModel>('User', UserSchema);

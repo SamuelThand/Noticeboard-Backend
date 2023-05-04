@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true })); // Parse incoming requests with
 
 // TODO better security
 const session: SessionOptions = {
-  secret: 'hemligheten',
+  secret: process.env.SECRET_KEY!,
   resave: false,
   saveUninitialized: true,
   cookie: {
