@@ -15,6 +15,7 @@ dotenv.config();
 declare module 'express-session' {
   export interface Session {
     user?: any;
+    isAdmin?: boolean;
   }
 }
 
@@ -36,10 +37,12 @@ const session: SessionOptions = {
   secret: process.env.SECRET_KEY!,
   resave: false,
   saveUninitialized: true,
+  rolling: true, // TODO: review
   cookie: {
     sameSite: true,
     secure: false,
-    httpOnly: true
+    httpOnly: true,
+    maxAge: 1000 * 60 * 30 // 30 minutes
   }
 };
 

@@ -1,7 +1,11 @@
 import Express from 'express';
 import { User } from '../models/user';
 import { isValidObjectId } from 'mongoose';
-import { isAuthenticated } from '../middleware/authentication';
+import {
+  isAdmin,
+  isAuthenticated,
+  isAuthorized
+} from '../middleware/authentication';
 import bcrypt from 'bcrypt';
 
 const userRoutes = Express.Router();
@@ -45,6 +49,7 @@ userRoutes.post(
               next(error);
             }
             req.session.user = username;
+            req.session.isAdmin = result.isAdmin;
             req.session.save((error) => {
               if (error) {
                 return next(error);
@@ -152,6 +157,7 @@ userRoutes.post(
   }
 );
 
+// TODO: If the user is logged in or is admin
 /**
  * Delete user.
  *
@@ -162,6 +168,7 @@ userRoutes.post(
 userRoutes.delete(
   '/:id',
   isAuthenticated,
+  isAuthorized || isAdmin,
   function (req: Express.Request, res: Express.Response) {
     const id: string = req.params.id;
     if (isValidObjectId(id)) {
