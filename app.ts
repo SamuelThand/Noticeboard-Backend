@@ -39,7 +39,10 @@ const session: SessionOptions = {
   secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
   resave: false,
   saveUninitialized: true,
-  rolling: true, // TODO: review
+  
+  // TODO: review
+  
+  rolling: true, // Updates max age of session upon requests
   cookie: {
     sameSite: true,
     secure: false,
