@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import expressSession, { SessionOptions } from 'express-session';
+import helmet from 'helmet';
 // TODO import routes
 import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
@@ -39,9 +40,9 @@ const session: SessionOptions = {
   secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
   resave: false,
   saveUninitialized: true,
-  
+
   // TODO: review
-  
+
   rolling: true, // Updates max age of session upon requests
   cookie: {
     sameSite: true,
@@ -59,8 +60,27 @@ if (process.env.NODE_ENV === 'production') {
     session.cookie.sameSite = 'none';
     session.cookie.secure = true;
   }
+
+  // Add Helmet middleware for production
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          imgSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'"],
+          connectSrc: ["'self'"]
+        }
+      },
+      referrerPolicy: { policy: 'same-origin' }
+    })
+  );
+} else {
+  app.use(helmet());
 }
 
+app.use(helmet());
 app.use(expressSession(session));
 
 // TODO use routes, remove test route before production
