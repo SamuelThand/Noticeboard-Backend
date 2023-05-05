@@ -64,7 +64,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
     required: true,
     unique: true,
     trim: true,
-    minlength: 6,
+    minlength: [6, 'Minimum length of username is 6.'],
     immutable: true
   },
   password: {

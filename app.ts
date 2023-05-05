@@ -6,6 +6,7 @@ import expressSession, { SessionOptions } from 'express-session';
 // TODO import routes
 import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
+import postRoutes from './routes/posts';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,8 +34,9 @@ app.use(express.json()); // Parse incoming JSON payloads with express.json
 app.use(express.urlencoded({ extended: true })); // Parse incoming requests with urlencoded payloads using express.urlencoded
 
 // TODO better security
+// https://bit.ly/3LAEsH8
 const session: SessionOptions = {
-  secret: process.env.SECRET_KEY!,
+  secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
   resave: false,
   saveUninitialized: true,
   rolling: true, // TODO: review
@@ -42,7 +44,7 @@ const session: SessionOptions = {
     sameSite: true,
     secure: false,
     httpOnly: true,
-    maxAge: 1000 * 60 * 30 // 30 minutes
+    maxAge: 1000 * 60 * 30 // 30 minutes, combined with 'rolling: true' kills inactive sessions
   }
 };
 
@@ -61,6 +63,7 @@ app.use(expressSession(session));
 // TODO use routes, remove test route before production
 app.use('/tests', testRoutes);
 app.use('/users', userRoutes);
+app.use('/posts', postRoutes);
 
 mongoose
   .connect(process.env.DB_SERVER!)

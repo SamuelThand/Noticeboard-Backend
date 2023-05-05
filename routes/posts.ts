@@ -65,6 +65,7 @@ postRoutes.post(
   isAuthenticated,
   function (req: Express.Request, res: Express.Response, next) {
     const post = req.body;
+    post.creator = req.session.user;
 
     Post.addPost(post)
       .then((result) => {
@@ -88,7 +89,7 @@ postRoutes.put(
       res.status(400).json({ message: 'Invalid ID' });
     }
 
-    Post.editPost(post)
+    Post.editPost(id, post)
       .then((result) => {
         res.status(200).json(result);
       })
@@ -103,10 +104,22 @@ postRoutes.delete(
   isAuthenticated,
   isPostCreator || isAdmin,
   function (req: Express.Request, res: Express.Response, next) {
-    const id = req.params.id;
+    const id: string = req.params.id;
 
-    if (!isValidObjectId(id)) {
+    if (isValidObjectId(id)) {
+      Post.removePost(id)
+        .then((result) => {
+          result
+            ? res.status(200).json(result)
+            : res.status(404).json({ message: 'Post not found' });
+        })
+        .catch((error) => {
+          res.status(500).send({ error: error.message });
+        });
+    } else {
       res.status(400).json({ message: 'Invalid ID' });
     }
   }
 );
+
+export default postRoutes;
