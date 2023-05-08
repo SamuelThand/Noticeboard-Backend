@@ -52,11 +52,15 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   firstName: {
     type: String,
     required: true,
+    minlength: 1,
+    maxlength: 60,
     trim: true
   },
   lastName: {
     type: String,
     required: true,
+    minlength: 1,
+    maxlength: 60,
     trim: true
   },
   userName: {
@@ -65,6 +69,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
     unique: true,
     trim: true,
     minlength: [6, 'Minimum length of username is 6.'],
+    maxlength: [30, 'Maximum length of username is 30.'],
     immutable: true
   },
   password: {
@@ -84,6 +89,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
     required: true
   }
 });
+
 // TODO: Decide if password should be remove in the route or here
 // Remove password example:
 // return this.find({}).select('-password');
@@ -97,7 +103,7 @@ UserSchema.static('getUser', function (id: string) {
 });
 
 UserSchema.static('getUserByUsername', function (username: string) {
-  return this.findOne({ username });
+  return this.findOne({ userName: username });
 });
 
 UserSchema.static('addUser', function (user: IUser): Promise<IUser> {

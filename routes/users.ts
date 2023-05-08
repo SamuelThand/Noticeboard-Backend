@@ -43,6 +43,7 @@ userRoutes.post(
 
     User.getUserByUsername(username)
       .then((result) => {
+        console.log(result);
         if (result && bcrypt.compareSync(password, result.password)) {
           req.session.regenerate((error) => {
             if (error) {
@@ -66,7 +67,6 @@ userRoutes.post(
       });
   }
 );
-
 /**
  * Sign out.
  * @route GET /users/signout

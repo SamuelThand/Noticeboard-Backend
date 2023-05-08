@@ -77,7 +77,6 @@ const PostSchema = new Schema<IPost, PostModel, IPostMethods>({
   },
   date: {
     type: Date,
-    default: new Date(),
     immutable: true
   },
   lastEdited: {
@@ -102,6 +101,7 @@ PostSchema.static('getPostsByUser', function (username: string) {
 });
 
 PostSchema.static('addPost', function (post: IPost) {
+  post.date = new Date();
   return this.create(post);
 });
 
