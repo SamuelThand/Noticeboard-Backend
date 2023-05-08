@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true })); // Parse incoming requests with
 const session: SessionOptions = {
   secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
 
   // TODO: review
 
@@ -80,7 +80,6 @@ if (process.env.NODE_ENV === 'production') {
   app.use(helmet());
 }
 
-app.use(helmet());
 app.use(expressSession(session));
 
 // TODO use routes, remove test route before production

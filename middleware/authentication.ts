@@ -8,6 +8,7 @@ export function isAuthenticated(
   res: Express.Response,
   next: Function
 ) {
+  console.log(req.session);
   req.session.user ? next() : res.status(401).json();
 }
 

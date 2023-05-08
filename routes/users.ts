@@ -22,6 +22,7 @@ userRoutes.get(
   '/isloggedin',
   isAuthenticated,
   function (req: Express.Request, res: Express.Response, next) {
+    console.log('Logged in.');
     res.status(200).json();
   }
 );
@@ -43,18 +44,19 @@ userRoutes.post(
 
     User.getUserByUsername(username)
       .then((result) => {
-        console.log(result);
         if (result && bcrypt.compareSync(password, result.password)) {
           req.session.regenerate((error) => {
             if (error) {
               next(error);
             }
+            console.log(result);
             req.session.user = username;
             req.session.isAdmin = result.isAdmin;
             req.session.save((error) => {
               if (error) {
                 return next(error);
               }
+              console.log('Everything saved: ' + req.session.user);
               res.status(200).json(result);
             });
           });
