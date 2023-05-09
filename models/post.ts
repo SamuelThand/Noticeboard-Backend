@@ -84,7 +84,7 @@ const PostSchema = new Schema<IPost, PostModel, IPostMethods>({
   },
   tag: {
     type: String,
-    maxlength: [30, 'Maximum length of tag is 30.']
+    maxlength: [10, 'Maximum length of tag is 10.']
   }
 });
 

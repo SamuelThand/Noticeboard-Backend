@@ -60,25 +60,23 @@ if (process.env.NODE_ENV === 'production') {
     session.cookie.sameSite = 'none';
     session.cookie.secure = true;
   }
-
-  // Add Helmet middleware for production
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          imgSrc: ["'self'"],
-          scriptSrc: ["'self'"],
-          styleSrc: ["'self'"],
-          connectSrc: ["'self'"]
-        }
-      },
-      referrerPolicy: { policy: 'same-origin' }
-    })
-  );
-} else {
-  app.use(helmet());
 }
+
+// Add Helmet middleware for production
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        connectSrc: ["'self'"]
+      }
+    },
+    referrerPolicy: { policy: 'same-origin' }
+  })
+);
 
 app.use(expressSession(session));
 
