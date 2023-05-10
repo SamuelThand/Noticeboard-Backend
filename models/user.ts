@@ -92,10 +92,6 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   }
 });
 
-// TODO: Decide if password should be remove in the route or here
-// Remove password example:
-// return this.find({}).select('-password');
-
 UserSchema.static('getUsers', function () {
   return this.find({});
 });

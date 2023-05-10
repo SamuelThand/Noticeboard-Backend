@@ -1,16 +1,15 @@
-import Express from 'express';
-import { User } from '../models/user';
-import { isValidObjectId } from 'mongoose';
 import {
   isAdmin,
   isAuthenticated,
   isAuthorized
 } from '../middleware/authentication';
+import { loginLimiter15m, loginLimiter24h } from '../middleware/rateLimiter';
 import bcrypt from 'bcrypt';
+import Express from 'express';
+import { isValidObjectId } from 'mongoose';
+import { User } from '../models/user';
 
 const userRoutes = Express.Router();
-
-// TODO: Decide if password should be removed (from the returned user obj) here or in the model
 
 /**
  * Determine logged in status
@@ -51,6 +50,8 @@ userRoutes.get(
  */
 userRoutes.post(
   '/signin',
+  loginLimiter15m,
+  loginLimiter24h,
   function (req: Express.Request, res: Express.Response, next) {
     const username = req.body.username;
     const password = req.body.password;
