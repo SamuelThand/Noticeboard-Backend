@@ -22,8 +22,21 @@ userRoutes.get(
   '/isloggedin',
   isAuthenticated,
   function (req: Express.Request, res: Express.Response, next) {
-    console.log('Logged in.');
-    res.status(200).json();
+    const id: string = req.session.user;
+    if (isValidObjectId(id)) {
+      User.getUser(id)
+        .then((result) => {
+          result
+            ? res.status(200).json(result)
+            : res.status(404).json({ message: 'User not found' });
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(500).json({ message: 'Something unexpected happened' });
+        });
+    } else {
+      res.status(400).json({ error: 'Invalid user' });
+    }
   }
 );
 
@@ -50,14 +63,14 @@ userRoutes.post(
               next(error);
             }
             console.log(result);
-            req.session.user = username;
+            req.session.user = result._id;
             req.session.isAdmin = result.isAdmin;
             req.session.save((error) => {
               if (error) {
                 return next(error);
               }
               console.log('Everything saved: ' + req.session.user);
-              res.status(200).json(result);
+              res.status(200).json({ message: 'Signed in' });
             });
           });
         } else {
@@ -65,7 +78,8 @@ userRoutes.post(
         }
       })
       .catch((error) => {
-        res.status(500).json({ message: error.message });
+        console.log(error);
+        res.status(500).json({ message: 'Something unexpected happened' });
       });
   }
 );
@@ -80,7 +94,8 @@ userRoutes.get(
   function (req: Express.Request, res: Express.Response) {
     req.session.destroy((error) => {
       if (error) {
-        res.status(500).json({ message: error.message });
+        console.log(error);
+        res.status(500).json({ message: 'Something unexpected happened' });
       } else {
         res.status(200).json({ message: 'Signed out' });
       }
@@ -100,7 +115,8 @@ userRoutes.get('/', function (req: Express.Request, res: Express.Response) {
       res.status(200).json(result);
     })
     .catch((error) => {
-      res.status(500).json({ message: error.message });
+      console.log(error);
+      res.status(500).json({ message: 'Something unexpected happened' });
     });
 });
 
@@ -121,7 +137,8 @@ userRoutes.get('/:id', function (req: Express.Request, res: Express.Response) {
           : res.status(404).json({ message: 'User not found' });
       })
       .catch((error) => {
-        res.status(500).json({ message: error.message });
+        console.log(error);
+        res.status(500).json({ message: 'Something unexpected happened' });
       });
   } else {
     res.status(400).json({ error: 'Invalid user' });
@@ -143,17 +160,17 @@ userRoutes.post(
     user.password = bcrypt.hashSync(user.password, salt);
     User.addUser(user)
       .then((result) => {
+        result.password = '';
         res.status(201).json(result);
       })
       .catch((error) => {
         if (error.name === 'MongoServerError' && error.code === 11000) {
-          res
-            .status(409)
-            .json({ message: 'User already exists with that username.' });
+          res.status(409).json({ message: 'Invalid username.' });
         } else if (error.name === 'ValidationError') {
           res.status(400).json({ message: 'Incorrect format' });
         } else {
-          res.status(500).json({ message: error.message });
+          console.log(error);
+          res.status(500).json({ message: 'Something unexpected happened' });
         }
       });
   }
@@ -181,7 +198,8 @@ userRoutes.delete(
             : res.status(404).json({ message: 'User not found' });
         })
         .catch((error) => {
-          res.status(500).json({ message: error.message });
+          console.log(error);
+          res.status(500).json({ message: 'Something unexpected happened' });
         });
     } else {
       res.status(400).json({ error: 'Invalid user' });

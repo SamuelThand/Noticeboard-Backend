@@ -17,7 +17,7 @@ export function isAuthorized(
   res: Express.Response,
   next: Function
 ) {
-  req.session.user === req.params.username ? next() : res.status(401).json();
+  req.session.user === req.params._id ? next() : res.status(401).json();
 }
 
 export function isAdmin(

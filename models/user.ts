@@ -1,6 +1,7 @@
 import { model, Model, Schema } from 'mongoose';
 
 interface IUser {
+  _id: string;
   firstName: string;
   lastName: string;
   userName: string;
@@ -74,7 +75,8 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    select: false
   },
   userSince: {
     type: Date,
@@ -103,7 +105,7 @@ UserSchema.static('getUser', function (id: string) {
 });
 
 UserSchema.static('getUserByUsername', function (username: string) {
-  return this.findOne({ userName: username });
+  return this.findOne({ userName: username }).select('+password');
 });
 
 UserSchema.static('addUser', function (user: IUser): Promise<IUser> {
