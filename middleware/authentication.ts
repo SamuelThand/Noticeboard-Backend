@@ -37,7 +37,7 @@ export function isPostCreator(
   const user: string = req.session.user;
   Post.findById(id)
     .then((result) => {
-      if (user === result?.creator) {
+      if (user === result?.creator.toString()) {
         next();
       } else {
         res.status(401).json();
