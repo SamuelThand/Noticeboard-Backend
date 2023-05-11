@@ -60,6 +60,7 @@ userRoutes.post(
       .then((result) => {
         if (result && bcrypt.compareSync(password, result.password)) {
           req.session.regenerate((error) => {
+            result.password = '';
             if (error) {
               next(error);
             }
@@ -71,7 +72,7 @@ userRoutes.post(
                 return next(error);
               }
               console.log('Everything saved: ' + req.session.user);
-              res.status(200).json({ message: 'Signed in' });
+              res.status(200).json(result);
             });
           });
         } else {

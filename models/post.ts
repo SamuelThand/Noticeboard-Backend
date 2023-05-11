@@ -1,7 +1,7 @@
 import { model, Model, Schema } from 'mongoose';
 
 interface IPost {
-  creator: string;
+  creator: Schema.Types.ObjectId;
   title: string;
   content: string;
   date: Date;
@@ -61,9 +61,10 @@ interface PostModel extends Model<IPost, {}, IPostMethods> {
 
 const PostSchema = new Schema<IPost, PostModel, IPostMethods>({
   creator: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
-    immutable: true
+    immutable: true,
+    ref: 'User'
   },
   title: {
     type: String,
@@ -89,7 +90,7 @@ const PostSchema = new Schema<IPost, PostModel, IPostMethods>({
 });
 
 PostSchema.static('getPosts', function () {
-  return this.find({});
+  return this.find({}).populate('creator', 'userName');
 });
 
 PostSchema.static('getPost', function (id: string) {
