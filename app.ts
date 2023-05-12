@@ -9,9 +9,14 @@ import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
 import postRoutes from './routes/posts';
 import path from 'path';
+import https from 'https';
+import fs from 'fs';
 
 const app = express();
-const port = process.env.PORT || 3000;
+// const port = process.env.PORT || 3000; // TODO HTTP Development PORTS
+const port = process.env.PORT || 8443; // TODO HTTPS production PORTS
+const privateKey = fs.readFileSync('server.key');
+const certificate = fs.readFileSync('server.cert');
 
 dotenv.config();
 
@@ -22,8 +27,11 @@ declare module 'express-session' {
   }
 }
 
-// TODO uppdatera
-const allowedOrigins = ['http://localhost:4200', 'https://studenter.miun.se'];
+// TODO HTTP development origins
+// const allowedOrigins = ['http://localhost:4200'];
+
+// TODO HTTPS production origins
+const allowedOrigins = ['https://10.55.102.33:8443'];
 
 // TODO better security
 const corsOptions = {
@@ -80,7 +88,7 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrcAttr: ["'unsafe-inline'"],
-        connectSrc: ["'self'"]
+        connectSrc: ["'self'", 'https://localhost:8443']
       }
     },
     referrerPolicy: { policy: 'same-origin' }
@@ -94,10 +102,7 @@ app.use('/tests', testRoutes);
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
 
-// TODO Serve angular frontend
-//
-//
-//
+// TODO Serve angular frontend, catch all other routes and return the index file from Angular
 app.use(
   express.static(
     path.join(
@@ -106,8 +111,6 @@ app.use(
     )
   )
 );
-
-// Catch all other routes and return the index file from Angular
 app.get('*', (req, res) => {
   res.sendFile(
     path.join(
@@ -116,10 +119,6 @@ app.get('*', (req, res) => {
     )
   );
 });
-//
-//
-//
-//
 
 mongoose
   .connect(process.env.DB_SERVER!)
@@ -131,7 +130,20 @@ mongoose
     process.exit(1);
   });
 
-// Start the server
-app.listen(port, function () {
+// // TODO Start development HTTP SERVER
+// app.listen(port, function () {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+// // TODO Start production HTTPS SERVER
+const server = https.createServer(
+  {
+    key: privateKey,
+    cert: certificate
+  },
+  app
+);
+
+server.listen(port, function () {
   console.log(`Server is running on port ${port}`);
 });
