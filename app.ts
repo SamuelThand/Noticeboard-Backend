@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
 import postRoutes from './routes/posts';
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -62,15 +63,23 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
+// TODO CSP config för hosting av hela appen
+//
+// problem med helmet configen, måste ha unsafe inline och
+// tillåta gstatic bilder?
 // Add Helmet middleware for production
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'"],
+        // imgSrc: ["'self'"],
+        imgSrc: ["'self'", 'https://ssl.gstatic.com'],
+        // scriptSrc: ["'self'"],
+        // styleSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
         connectSrc: ["'self'"]
       }
     },
@@ -84,6 +93,33 @@ app.use(expressSession(session));
 app.use('/tests', testRoutes);
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
+
+// TODO Serve angular frontend
+//
+//
+//
+app.use(
+  express.static(
+    path.join(
+      __dirname,
+      '../../dt167g-project-group6-frontend/dist/dt167g-project-group6-frontend'
+    )
+  )
+);
+
+// Catch all other routes and return the index file from Angular
+app.get('*', (req, res) => {
+  res.sendFile(
+    path.join(
+      __dirname,
+      '../../dt167g-project-group6-frontend/dist/dt167g-project-group6-frontend/index.html'
+    )
+  );
+});
+//
+//
+//
+//
 
 mongoose
   .connect(process.env.DB_SERVER!)
