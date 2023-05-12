@@ -14,6 +14,10 @@ postRoutes.get(
   function (req: Express.Request, res: Express.Response, next) {
     Post.getPosts()
       .then((result) => {
+        result.forEach((post) => {
+          post.likeStatus = post.likes.includes(req.session.user);
+          post.hateStatus = post.hates.includes(req.session.user);
+        });
         res.status(200).json(result);
       })
       .catch((error) => {
@@ -90,6 +94,48 @@ postRoutes.put(
     }
 
     Post.editPost(id, post)
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((error) => {
+        next(error);
+      });
+  }
+);
+
+postRoutes.put(
+  '/like/:id',
+  isAuthenticated,
+  function (req: Express.Request, res: Express.Response, next) {
+    const id = req.params.id;
+    const user = req.session.user;
+
+    if (!isValidObjectId(id)) {
+      res.status(400).json({ message: 'Invalid ID' });
+    }
+
+    Post.likePost(id, user)
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((error) => {
+        next(error);
+      });
+  }
+);
+
+postRoutes.put(
+  '/hate/:id',
+  isAuthenticated,
+  function (req: Express.Request, res: Express.Response, next) {
+    const id = req.params.id;
+    const user = req.session.user;
+
+    if (!isValidObjectId(id)) {
+      res.status(400).json({ message: 'Invalid ID' });
+    }
+
+    Post.hatePost(id, user)
       .then((result) => {
         res.status(200).json(result);
       })

@@ -5,11 +5,13 @@ interface IPost {
   title: string;
   content: string;
   date: Date;
+  likes: Schema.Types.ObjectId[];
+  hates: Schema.Types.ObjectId[];
+  likeStatus?: boolean;
+  hateStatus?: boolean;
   lastEdited: Date;
   tag?: string;
 }
-
-// TODO: Check date fields. Use Date.now() or new Date()?
 
 interface IPostMethods {
   updateEditDate(): void;
@@ -50,6 +52,8 @@ interface PostModel extends Model<IPost, {}, IPostMethods> {
    * @returns {Promise<IPost>} promise with the updated post
    */
   editPost(id: string, editedPost: IPost): Promise<IPost>;
+  likePost(id: string, userId: string): Promise<IPost>;
+  hatePost(id: string, userId: string): Promise<IPost>;
   /**
    * Remove a post from the database.
    *
@@ -80,6 +84,16 @@ const PostSchema = new Schema<IPost, PostModel, IPostMethods>({
     type: Date,
     immutable: true
   },
+  likes: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User',
+    default: []
+  },
+  hates: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User',
+    default: []
+  },
   lastEdited: {
     type: Date
   },
@@ -109,6 +123,23 @@ PostSchema.static('addPost', function (post: IPost) {
 PostSchema.static('editPost', function (id: string, editedPost: IPost) {
   editedPost.lastEdited = new Date();
   return this.findByIdAndUpdate(id, editedPost, { new: true });
+});
+
+// TODO: Check if user has already liked/disliked the post.
+PostSchema.static('likePost', function (id: string, userId: string) {
+  return this.findByIdAndUpdate(
+    id,
+    { $addToSet: { likes: userId }, $pull: { hates: userId } },
+    { new: true }
+  );
+});
+
+PostSchema.static('hatePost', function (id: string, userId: string) {
+  return this.findByIdAndUpdate(
+    id,
+    { $addToSet: { hates: userId }, $pull: { likes: userId } },
+    { new: true }
+  );
 });
 
 PostSchema.static('removePost', function (id: string) {

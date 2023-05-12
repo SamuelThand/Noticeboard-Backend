@@ -8,7 +8,6 @@ export function isAuthenticated(
   res: Express.Response,
   next: Function
 ) {
-  console.log(req.session);
   req.session.user ? next() : res.status(401).json();
 }
 
@@ -40,10 +39,11 @@ export function isPostCreator(
       if (user === result?.creator.toString()) {
         next();
       } else {
-        res.status(401).json();
+        res.status(401).json({ message: 'Post creator validation failed' });
       }
     })
     .catch((error) => {
-      res.status(404).send({ error: error.message + 'isPostCreatorStuff' });
+      console.log(error);
+      res.status(404).send({ message: 'Something unexpected happened.' });
     });
 }

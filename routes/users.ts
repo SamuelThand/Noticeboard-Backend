@@ -64,14 +64,12 @@ userRoutes.post(
             if (error) {
               next(error);
             }
-            console.log(result);
             req.session.user = result._id;
             req.session.isAdmin = result.isAdmin;
             req.session.save((error) => {
               if (error) {
                 return next(error);
               }
-              console.log('Everything saved: ' + req.session.user);
               res.status(200).json(result);
             });
           });
