@@ -85,7 +85,7 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrcAttr: ["'unsafe-inline'"],
-        connectSrc: ["'self'", "'https://localhost:8443'"]
+        connectSrc: ["'self'", 'https://localhost:8443']
       }
     },
     referrerPolicy: { policy: 'same-origin' }
