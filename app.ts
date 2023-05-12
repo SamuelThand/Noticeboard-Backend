@@ -27,8 +27,11 @@ declare module 'express-session' {
   }
 }
 
-// TODO uppdatera
-const allowedOrigins = ['http://localhost:4200'];
+// TODO HTTP development origins
+// const allowedOrigins = ['http://localhost:4200'];
+
+// TODO HTTPS production origins
+const allowedOrigins = ['https://10.55.102.33:8443'];
 
 // TODO better security
 const corsOptions = {
