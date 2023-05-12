@@ -194,4 +194,8 @@ dist
 .history
 .ionide
 
+# SSL
+server.cert
+server.key
+
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,angular
