@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -85,6 +85,23 @@ function setUpDevelopment() {
       console.log('db error', error);
       process.exit(1);
     });
+
+  app.use((req: express.Request, res: express.Response, next: NextFunction) => {
+    res.status(404).send('Sorry, not found!');
+  });
+
+  // Custom error handler for reduced fingerprinting
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: NextFunction
+    ) => {
+      console.error(err.stack);
+      res.status(500).send('Error!');
+    }
+  );
 
   app.listen(port, function () {
     console.log(`Server is running on port ${port}`);
@@ -193,6 +210,24 @@ function setUpProduction() {
       cert: certificate
     },
     app
+  );
+
+  // Custom 404 handler for reduced fingerprinting
+  app.use((req: express.Request, res: express.Response, next: NextFunction) => {
+    res.status(404).send('Sorry, not found!');
+  });
+
+  // Custom error handler for reduced fingerprinting
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: NextFunction
+    ) => {
+      console.error(err.stack);
+      res.status(500).send('Error!');
+    }
   );
 
   server.listen(port, function () {
