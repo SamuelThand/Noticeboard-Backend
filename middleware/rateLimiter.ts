@@ -13,3 +13,10 @@ export const loginLimiter24h = rateLimit({
   message: 'Too many login attempts in 24 hours.',
   skipSuccessfulRequests: true
 });
+
+export const requestSpamLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 200,
+  message:
+    'Too many requests in a short timeframe from this IP. Please try again later.'
+});

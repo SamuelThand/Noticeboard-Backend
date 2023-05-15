@@ -10,6 +10,7 @@ import postRoutes from './routes/posts';
 import path from 'path';
 import https from 'https';
 import fs from 'fs';
+import { requestSpamLimiter } from './middleware/rateLimiter';
 
 declare module 'express-session' {
   export interface Session {
@@ -40,6 +41,7 @@ function setUpDevelopment() {
   app.use(cors(corsOptions));
   app.use(express.json()); // Parse incoming JSON payloads with express.json
   app.use(express.urlencoded({ extended: true })); // Parse incoming requests with urlencoded payloads using express.urlencoded
+  app.use(requestSpamLimiter);
 
   // https://bit.ly/3LAEsH8
   const session: SessionOptions = {
