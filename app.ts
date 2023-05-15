@@ -4,7 +4,6 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import expressSession, { SessionOptions } from 'express-session';
 import helmet from 'helmet';
-// TODO import routes
 import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
 import postRoutes from './routes/posts';
@@ -18,6 +17,7 @@ declare module 'express-session' {
     isAdmin?: boolean;
   }
 }
+dotenv.config();
 
 if (process.env.NODE_ENV === 'production') {
   setUpProduction();
@@ -28,7 +28,6 @@ if (process.env.NODE_ENV === 'production') {
 function setUpDevelopment() {
   const app = express();
   const port = process.env.PORT || 3000;
-  dotenv.config();
 
   // TODO HTTP development origins
   const allowedOrigins = ['http://localhost:4200'];
@@ -55,15 +54,6 @@ function setUpDevelopment() {
       maxAge: 1000 * 60 * 30 // 30 minutes, combined with 'rolling: true' kills inactive sessions
     }
   };
-
-  if (process.env.NODE_ENV === 'production') {
-    console.log('setting as production');
-    app.set('trust proxy', 1);
-    if (session.cookie !== undefined) {
-      session.cookie.sameSite = 'none';
-      session.cookie.secure = true;
-    }
-  }
 
   app.use(
     helmet({
@@ -106,8 +96,6 @@ function setUpProduction() {
   const port = process.env.PORT || 8443; // TODO HTTPS production PORTS
   const privateKey = fs.readFileSync('server.key');
   const certificate = fs.readFileSync('server.cert');
-
-  dotenv.config();
 
   // TODO HTTPS production origins
   const allowedOrigins = ['https://10.55.102.33:8443'];
