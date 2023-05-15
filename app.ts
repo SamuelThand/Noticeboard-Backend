@@ -47,6 +47,7 @@ function setUpDevelopment() {
     resave: false,
     saveUninitialized: false,
     rolling: true, // Updates max age of session upon requests
+    name: 'session-id',
     cookie: {
       sameSite: true,
       secure: false,
@@ -133,7 +134,7 @@ function setUpProduction() {
     secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
     resave: false,
     saveUninitialized: false,
-
+    name: 'session-id',
     // TODO: review
 
     rolling: true, // Updates max age of session upon requests
