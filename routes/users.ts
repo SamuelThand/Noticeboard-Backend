@@ -35,9 +35,6 @@ userRoutes.get(
   }
 );
 
-// TODO: Check for a better way to handle this
-// Consider a way to handle too many incorrect login attempts
-
 /**
  * Log in.
  *

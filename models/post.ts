@@ -32,13 +32,6 @@ interface PostModel extends Model<IPost, {}, IPostMethods> {
    */
   getPost(id: string): Promise<IPost>;
   /**
-   * Get all posts made by user.
-   *
-   * @param {string} username of the creator.
-   * @returns {Promise<IPost[]>}
-   */
-  getPostsByUser(username: string): Promise<IPost[]>;
-  /**
    * Add a new post to database.
    *
    * @param {IPost} post to insert.
@@ -123,10 +116,6 @@ PostSchema.static('getPosts', function () {
 
 PostSchema.static('getPost', function (id: string) {
   return this.findById(id);
-});
-
-PostSchema.static('getPostsByUser', function (username: string) {
-  return this.find({ username });
 });
 
 PostSchema.static('addPost', function (post: IPost) {

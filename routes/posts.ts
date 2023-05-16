@@ -9,12 +9,18 @@ import {
 
 const postRoutes = Express.Router();
 
+/**
+ * Get all posts.
+ * @route GET /posts/
+ * @returns 200 - all posts, 500 - Error
+ */
 postRoutes.get(
   '/',
   function (req: Express.Request, res: Express.Response, next) {
     Post.getPosts()
       .then((result) => {
         result.forEach((post) => {
+          // Set *status to true if current user in session is in likes or hates
           post.likeStatus = post.likes.includes(req.session.user);
           post.hateStatus = post.hates.includes(req.session.user);
         });
@@ -26,6 +32,11 @@ postRoutes.get(
   }
 );
 
+/**
+ * Get a post by id.
+ * @route GET /posts/:id
+ * @returns 200 - post, 400 - Invalid ID, 404 - Not found
+ */
 postRoutes.get(
   '/:id',
   function (req: Express.Request, res: Express.Response, next) {
@@ -49,21 +60,11 @@ postRoutes.get(
   }
 );
 
-postRoutes.get(
-  '/:username',
-  function (req: Express.Request, res: Express.Response, next) {
-    const username = req.params.username;
-
-    Post.getPostsByUser(username)
-      .then((result) => {
-        res.status(200).json(result);
-      })
-      .catch((error) => {
-        next(error);
-      });
-  }
-);
-
+/**
+ * Add a new post.
+ * @route POST /posts/
+ * @returns 200 - post
+ */
 postRoutes.post(
   '/',
   isAuthenticated,
@@ -81,6 +82,11 @@ postRoutes.post(
   }
 );
 
+/**
+ * Update a post.
+ * @route PUT /posts/
+ * @returns 200 - post, 400 - Invalid ID
+ */
 postRoutes.put(
   '/:id',
   isAuthenticated,
@@ -103,6 +109,11 @@ postRoutes.put(
   }
 );
 
+/**
+ * Add current user to likes.
+ * @route PUT /posts/like/:id
+ * @returns 200 - post, 400 - Invalid ID
+ */
 postRoutes.put(
   '/like/:id',
   isAuthenticated,
@@ -124,6 +135,11 @@ postRoutes.put(
   }
 );
 
+/**
+ * Add current user to hates.
+ * @route PUT /posts/hate/:id
+ * @returns 200 - post, 400 - Invalid ID
+ */
 postRoutes.put(
   '/hate/:id',
   isAuthenticated,
@@ -145,6 +161,11 @@ postRoutes.put(
   }
 );
 
+/**
+ * Remove post.
+ * @route DELETE /posts/:id
+ * @returns 200 - post, 404 - Not found, 500 - Error, 400 - Invalid ID
+ */
 postRoutes.delete(
   '/:id',
   isAuthenticated,
@@ -160,7 +181,8 @@ postRoutes.delete(
             : res.status(404).json({ message: 'Post not found' });
         })
         .catch((error) => {
-          res.status(500).send({ error: error.message });
+          console.log(error.message);
+          res.status(500).send({ error: 'Something unexpected happened' });
         });
     } else {
       res.status(400).json({ message: 'Invalid ID' });
