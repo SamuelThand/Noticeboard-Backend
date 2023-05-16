@@ -40,13 +40,6 @@ interface UserModel extends Model<IUser, {}, IUserMethods> {
    * @returns {Promise<IUser>} added user
    */
   addUser(user: IUser): Promise<IUser>;
-  /**
-   * Remove user.
-   *
-   * @param {string} id user id
-   * @returns {Promise<IUser>} removed user
-   */
-  removeUser(id: string): Promise<IUser>;
 }
 
 const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
@@ -106,10 +99,6 @@ UserSchema.static('getUserByUsername', function (username: string) {
 
 UserSchema.static('addUser', function (user: IUser): Promise<IUser> {
   return this.create(user);
-});
-
-UserSchema.static('removeUser', function (id: string) {
-  return this.findByIdAndDelete(id);
 });
 
 export const User = model<IUser, UserModel>('User', UserSchema);

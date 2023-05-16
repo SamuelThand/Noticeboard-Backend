@@ -1,8 +1,4 @@
-import {
-  isAdmin,
-  isAuthenticated,
-  isAuthorized
-} from '../middleware/authentication';
+import { isAuthenticated } from '../middleware/authentication';
 import { loginLimiter15m, loginLimiter24h } from '../middleware/rateLimiter';
 import bcrypt from 'bcrypt';
 import Express from 'express';
@@ -39,9 +35,6 @@ userRoutes.get(
   }
 );
 
-// TODO: Check for a better way to handle this
-// Consider a way to handle too many incorrect login attempts
-
 /**
  * Log in.
  *
@@ -60,7 +53,7 @@ userRoutes.post(
       .then((result) => {
         if (result && bcrypt.compareSync(password, result.password)) {
           req.session.regenerate((error) => {
-            result.password = '';
+            result.password = ''; // Remove hash from obj
             if (error) {
               next(error);
             }
@@ -83,6 +76,7 @@ userRoutes.post(
       });
   }
 );
+
 /**
  * Sign out.
  * @route GET /users/signout
@@ -160,12 +154,12 @@ userRoutes.post(
     user.password = bcrypt.hashSync(user.password, salt);
     User.addUser(user)
       .then((result) => {
-        result.password = '';
+        result.password = ''; // Remove hash from obj
         res.status(201).json(result);
       })
       .catch((error) => {
         if (error.name === 'MongoServerError' && error.code === 11000) {
-          res.status(409).json({ message: 'Invalid username.' });
+          res.status(409).json({ message: 'Invalid.' });
         } else if (error.name === 'ValidationError') {
           res.status(400).json({ message: 'Incorrect format' });
         } else {
@@ -173,37 +167,6 @@ userRoutes.post(
           res.status(500).json({ message: 'Something unexpected happened' });
         }
       });
-  }
-);
-
-// TODO: If the user is logged in or is admin
-/**
- * Delete user.
- *
- * @route DELETE /users/:id
- * @param id of the user
- * @return 202 - The deleted user, 404 - Not found, 400 - Invalid, 500 - Error
- */
-userRoutes.delete(
-  '/:id',
-  isAuthenticated,
-  isAuthorized || isAdmin,
-  function (req: Express.Request, res: Express.Response) {
-    const id: string = req.params.id;
-    if (isValidObjectId(id)) {
-      User.removeUser(id)
-        .then((result) => {
-          result
-            ? res.status(202).json(result)
-            : res.status(404).json({ message: 'User not found' });
-        })
-        .catch((error) => {
-          console.log(error);
-          res.status(500).json({ message: 'Something unexpected happened' });
-        });
-    } else {
-      res.status(400).json({ error: 'Invalid user' });
-    }
   }
 );
 
