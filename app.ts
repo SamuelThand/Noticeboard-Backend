@@ -25,13 +25,14 @@ if (process.env.NODE_ENV === 'production') {
   setUpDevelopment();
 }
 
+/**
+ * Set up the environment for development.
+ * HTTP and less strict rulesets.
+ */
 function setUpDevelopment() {
   const app = express();
   const port = process.env.PORT || 3000;
-
-  // TODO HTTP development origins
-  const allowedOrigins = ['http://localhost:4200'];
-
+  const allowedOrigins = ['http://127.0.0.1:4200'];
   const corsOptions = {
     credentials: true,
     origin: allowedOrigins
@@ -40,11 +41,9 @@ function setUpDevelopment() {
   app.use(cors(corsOptions));
   app.use(express.json()); // Parse incoming JSON payloads with express.json
   app.use(express.urlencoded({ extended: true })); // Parse incoming requests with urlencoded payloads using express.urlencoded
-  app.use(requestSpamLimiter);
 
-  // https://bit.ly/3LAEsH8
   const session: SessionOptions = {
-    secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
+    secret: process.env.SECRET_KEY!,
     resave: false,
     saveUninitialized: false,
     rolling: true, // Updates max age of session upon requests
@@ -71,8 +70,8 @@ function setUpDevelopment() {
     })
   );
 
+  app.use(requestSpamLimiter); // Set up rate limiter that acts as a safeguard agains DDOS.
   app.use(expressSession(session));
-
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
@@ -108,16 +107,18 @@ function setUpDevelopment() {
   });
 }
 
+/**
+ * Set up the environment for production.
+ * HTTPS and more strict rulesets.
+ */
 function setUpProduction() {
   const app = express();
-  const port = process.env.PORT || 8443; // TODO HTTPS production PORTS
+  const port = process.env.PORT || 8443;
   const privateKey = fs.readFileSync('server.key');
   const certificate = fs.readFileSync('server.cert');
 
-  // TODO HTTPS production origins
-  const allowedOrigins = ['https://10.55.102.33:8443'];
+  const allowedOrigins = ['https://127.0.0.1:8443'];
 
-  // TODO better security
   const corsOptions = {
     credentials: true,
     origin: allowedOrigins
@@ -127,14 +128,11 @@ function setUpProduction() {
   app.use(express.json()); // Parse incoming JSON payloads with express.json
   app.use(express.urlencoded({ extended: true })); // Parse incoming requests with urlencoded payloads using express.urlencoded
 
-  // TODO better security
-  // https://bit.ly/3LAEsH8
   const session: SessionOptions = {
-    secret: process.env.SECRET_KEY!, // https://bit.ly/3nFIxBI
+    secret: process.env.SECRET_KEY!,
     resave: false,
     saveUninitialized: false,
     name: 'session-id',
-    // TODO: review
 
     rolling: true, // Updates max age of session upon requests
     cookie: {
@@ -161,7 +159,7 @@ function setUpProduction() {
           scriptSrc: ["'self'", "'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrcAttr: ["'unsafe-inline'"],
-          connectSrc: ["'self'", 'https://localhost:8443']
+          connectSrc: ["'self'", 'https://127.0.0.1:8443']
         }
       },
       referrerPolicy: { policy: 'same-origin' }
@@ -170,7 +168,6 @@ function setUpProduction() {
 
   app.use(expressSession(session));
 
-  // TODO use routes, remove test route before production
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
