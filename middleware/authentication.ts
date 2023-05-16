@@ -19,7 +19,7 @@ export function isAdmin(
   req.session.isAdmin ? next() : res.status(401).json();
 }
 
-export function isPostCreator(
+export function isPostCreatorOrAdmin(
   req: Express.Request,
   res: Express.Response,
   next: Function
@@ -28,10 +28,10 @@ export function isPostCreator(
   const user: string = req.session.user;
   Post.findById(id)
     .then((result) => {
-      if (user === result?.creator.toString()) {
+      if (user === result?.creator.toString() || req.session.isAdmin) {
         next();
       } else {
-        res.status(401).json({ message: 'Post creator validation failed' });
+        res.status(401).json({ message: 'Post validation failed' });
       }
     })
     .catch((error) => {

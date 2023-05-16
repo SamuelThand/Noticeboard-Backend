@@ -3,8 +3,7 @@ import { Post } from '../models/post';
 import { isValidObjectId } from 'mongoose';
 import {
   isAuthenticated,
-  isPostCreator,
-  isAdmin
+  isPostCreatorOrAdmin
 } from '../middleware/authentication';
 
 const postRoutes = Express.Router();
@@ -90,7 +89,7 @@ postRoutes.post(
 postRoutes.put(
   '/:id',
   isAuthenticated,
-  isAdmin || isPostCreator,
+  isPostCreatorOrAdmin,
   function (req: Express.Request, res: Express.Response, next) {
     const id = req.params.id;
     const post = req.body;
@@ -169,7 +168,7 @@ postRoutes.put(
 postRoutes.delete(
   '/:id',
   isAuthenticated,
-  isAdmin || isPostCreator,
+  isPostCreatorOrAdmin,
   function (req: Express.Request, res: Express.Response, next) {
     const id: string = req.params.id;
 

@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 function setUpDevelopment() {
   const app = express();
   const port = process.env.PORT || 3000;
-  const allowedOrigins = ['http://127.0.0.1:4200'];
+  const allowedOrigins = ['http://localhost:4200'];
   const corsOptions = {
     credentials: true,
     origin: allowedOrigins
@@ -117,7 +117,7 @@ function setUpProduction() {
   const privateKey = fs.readFileSync('server.key');
   const certificate = fs.readFileSync('server.cert');
 
-  const allowedOrigins = ['https://127.0.0.1:8443'];
+  const allowedOrigins = ['https://localhost:8443'];
 
   const corsOptions = {
     credentials: true,
@@ -159,7 +159,7 @@ function setUpProduction() {
           scriptSrc: ["'self'", "'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrcAttr: ["'unsafe-inline'"],
-          connectSrc: ["'self'", 'https://127.0.0.1:8443']
+          connectSrc: ["'self'", 'https://localhost:8443']
         }
       },
       referrerPolicy: { policy: 'same-origin' }
