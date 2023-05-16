@@ -145,11 +145,6 @@ function setUpProduction() {
   console.log('setting as production');
   app.set('trust proxy', 1);
 
-  // TODO CSP config för hosting av hela appen
-  //
-  // problem med helmet configen, måste ha unsafe inline och
-  // tillåta gstatic bilder?
-  // Add Helmet middleware for production
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -171,7 +166,6 @@ function setUpProduction() {
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
-  // TODO Serve angular frontend, catch all other routes and return the index file from Angular
   app.use(
     express.static(
       path.join(
@@ -199,7 +193,6 @@ function setUpProduction() {
       process.exit(1);
     });
 
-  // TODO Start production HTTPS SERVER
   const server = https.createServer(
     {
       key: privateKey,

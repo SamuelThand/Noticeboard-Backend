@@ -1,5 +1,3 @@
-// TODO review
-
 import Express from 'express';
 import { Post } from '../models/post';
 
