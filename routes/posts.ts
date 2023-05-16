@@ -84,7 +84,7 @@ postRoutes.post(
 postRoutes.put(
   '/:id',
   isAuthenticated,
-  isPostCreator || isAdmin,
+  isAdmin || isPostCreator,
   function (req: Express.Request, res: Express.Response, next) {
     const id = req.params.id;
     const post = req.body;
@@ -148,7 +148,7 @@ postRoutes.put(
 postRoutes.delete(
   '/:id',
   isAuthenticated,
-  isPostCreator || isAdmin,
+  isAdmin || isPostCreator,
   function (req: Express.Request, res: Express.Response, next) {
     const id: string = req.params.id;
 
