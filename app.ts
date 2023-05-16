@@ -116,7 +116,7 @@ function setUpProduction() {
   const certificate = fs.readFileSync('server.cert');
 
   // TODO HTTPS production origins
-  const allowedOrigins = ['https://10.55.102.33:8443'];
+  const allowedOrigins = ['https://127.0.0.1:8443'];
 
   // TODO better security
   const corsOptions = {
@@ -162,7 +162,7 @@ function setUpProduction() {
           scriptSrc: ["'self'", "'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrcAttr: ["'unsafe-inline'"],
-          connectSrc: ["'self'", 'https://localhost:8443']
+          connectSrc: ["'self'", 'https://127.0.0.1:8443']
         }
       },
       referrerPolicy: { policy: 'same-origin' }
