@@ -4,7 +4,6 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import expressSession, { SessionOptions } from 'express-session';
 import helmet from 'helmet';
-import testRoutes from './routes/tests';
 import userRoutes from './routes/users';
 import postRoutes from './routes/posts';
 import path from 'path';
@@ -74,8 +73,6 @@ function setUpDevelopment() {
 
   app.use(expressSession(session));
 
-  // TODO use routes, remove test route before production
-  app.use('/tests', testRoutes);
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
@@ -174,7 +171,6 @@ function setUpProduction() {
   app.use(expressSession(session));
 
   // TODO use routes, remove test route before production
-  app.use('/tests', testRoutes);
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 

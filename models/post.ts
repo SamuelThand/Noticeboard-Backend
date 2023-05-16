@@ -52,7 +52,21 @@ interface PostModel extends Model<IPost, {}, IPostMethods> {
    * @returns {Promise<IPost>} promise with the updated post
    */
   editPost(id: string, editedPost: IPost): Promise<IPost>;
+  /**
+   * Adds the user to the post likes array.
+   *
+   * @param id of the post
+   * @param userId of the user
+   * @returns {Promise<IPost>} promise with the updated post
+   */
   likePost(id: string, userId: string): Promise<IPost>;
+  /**
+   * Adds the user to the post hates array.
+   *
+   * @param id of the post
+   * @param userId of the user
+   * @returns {Promise<IPost>} promise with the updated post
+   */
   hatePost(id: string, userId: string): Promise<IPost>;
   /**
    * Remove a post from the database.
@@ -125,11 +139,10 @@ PostSchema.static('editPost', function (id: string, editedPost: IPost) {
   return this.findByIdAndUpdate(id, editedPost, { new: true });
 });
 
-// TODO: Check if user has already liked/disliked the post.
 PostSchema.static('likePost', function (id: string, userId: string) {
   return this.findByIdAndUpdate(
     id,
-    { $addToSet: { likes: userId }, $pull: { hates: userId } },
+    { $addToSet: { likes: userId }, $pull: { hates: userId } }, // Add user if not already present; if in hates, remove
     { new: true }
   );
 });
@@ -137,7 +150,7 @@ PostSchema.static('likePost', function (id: string, userId: string) {
 PostSchema.static('hatePost', function (id: string, userId: string) {
   return this.findByIdAndUpdate(
     id,
-    { $addToSet: { hates: userId }, $pull: { likes: userId } },
+    { $addToSet: { hates: userId }, $pull: { likes: userId } }, // Add user if not already present; if in likes, remove
     { new: true }
   );
 });
