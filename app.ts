@@ -70,8 +70,8 @@ function setUpDevelopment() {
     })
   );
 
-  app.use(requestSpamLimiter); // Set up rate limiter that acts as a safeguard agains DDOS.
   app.use(expressSession(session));
+  app.use(requestSpamLimiter); // Set up rate limiter that acts as a safeguard agains DDOS.
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
@@ -161,7 +161,7 @@ function setUpProduction() {
   );
 
   app.use(expressSession(session));
-
+  app.use(requestSpamLimiter); // Set up rate limiter that acts as a safeguard agains DDOS.
   app.use('/users', userRoutes);
   app.use('/posts', postRoutes);
 
