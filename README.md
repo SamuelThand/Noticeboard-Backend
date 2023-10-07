@@ -1,5 +1,7 @@
 # Noticeboard-Backend
 
+Built in Typescript with NodeJS, using an Express web server with Express Session authentication and Mongoose as drivers for a NoSQL MongoDB database.
+
 Requirements for the applications:
 
     Users can register and log in.
